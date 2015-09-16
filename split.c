@@ -3,16 +3,6 @@
 #include <malloc.h>
 
 void Split(char* string, char* delimiters, char*** tokens_ptr, int* tokensCount) {
-  /*
-   * FIXIT:
-   * Вынесите выделение памяти вне ф-и split. Почему? Допустим вы хотите оформить ф-ю в отдельную библиотеку, тогда пользователь увидит только
-   * сигнатуру ф-и. Ему надо будет догадаться каким-то образом, что ему память выделть не надо, но освободить он её должен. Это не круто, поэтому если вы освободаете память, то вы и должны были её выделить.
-   * По крайней мере так делать крайне желательно.
-   */
-
-    /*
-     * лучше явно подчёркивать, то данная переменная является константой с помощью слова const
-     */
     char** tokens = *tokens_ptr;
     char* cur_token = NULL;
 
@@ -25,11 +15,6 @@ void Split(char* string, char* delimiters, char*** tokens_ptr, int* tokensCount)
     tokens[*tokensCount] = cur_token;
 }
 
-/*
- * Очень хорошо, что вы сделали дополнительную ф-ю для вывода результата с понятным названием.
- * Это делает код самодокументируемым.
- */
-
 void PrintTokens (char** tokens, int tokensCount) {
     int i = 0;
 
@@ -37,11 +22,8 @@ void PrintTokens (char** tokens, int tokensCount) {
         printf("%s\n", tokens[i]);
 
 }
+
 int main() {
-    /*
-     * FIXIT:
-     * Надо объявить две константы MaxStringSize и MaxDelimetersCount вместо магических чисел 256
-     */
     const int MaxStringSize = 256;
     const int MaxDelimetersCount = 256;
     const int str_num = 30;
@@ -57,20 +39,9 @@ int main() {
     Split(string, delimiters, &tokens, &tokensCount);
     PrintTokens(tokens, tokensCount);
     printf("%d", tokensCount);
-    /*
-     * FIXIT:
-     * В каком месте вы выделяли память под tokens[i]?
-     * Вероятно не выделяли явно. Тогда где хранятся слова? Слова хранятся непосредственно в string (метод strtok её модифицирует, добавляя в нужные места символы конца строки).
-     * Из-за того, что вы пытаетесь освободить память, которую не выделяли, у меня, например, программа падает с segmentation fault`ом.
-     */
-
-
+ 
     free (tokens);
     free (string);
     free (delimiters);
-    /*
-     * FIXIT:
-     * Освободите уж всю память, которую выделили
-     */
     return 0;
 }
