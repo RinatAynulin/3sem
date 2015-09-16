@@ -9,13 +9,10 @@ void Split(char* string, char* delimiters, char*** tokens_ptr, int* tokensCount)
    * сигнатуру ф-и. Ему надо будет догадаться каким-то образом, что ему память выделть не надо, но освободить он её должен. Это не круто, поэтому если вы освободаете память, то вы и должны были её выделить.
    * По крайней мере так делать крайне желательно.
    */
-  
+
     /*
      * лучше явно подчёркивать, то данная переменная является константой с помощью слова const
      */
-  
-    const int str_num = 30;
-    *tokens_ptr = (char**) calloc(str_num, sizeof(char*));
     char** tokens = *tokens_ptr;
     char* cur_token = NULL;
 
@@ -29,7 +26,7 @@ void Split(char* string, char* delimiters, char*** tokens_ptr, int* tokensCount)
 }
 
 /*
- * Очень хорошо, что вы сделали дополнительную ф-ю для вывода результата с понятным названием. 
+ * Очень хорошо, что вы сделали дополнительную ф-ю для вывода результата с понятным названием.
  * Это делает код самодокументируемым.
  */
 
@@ -45,11 +42,15 @@ int main() {
      * FIXIT:
      * Надо объявить две константы MaxStringSize и MaxDelimetersCount вместо магических чисел 256
      */
-    char* string = (char*)malloc(sizeof(char) * 256);
-    char* delimiters = (char*)malloc(sizeof(char) * 256);
-    char **tokens = NULL;
+    const int MaxStringSize = 256;
+    const int MaxDelimetersCount = 256;
+    const int str_num = 30;
+    char* string = (char*)malloc(sizeof(char) * MaxStringSize);
+    char* delimiters = (char*)malloc(sizeof(char) * MaxDelimetersCount);
+    char **tokens = (char**) calloc(str_num, sizeof(char*));
     int tokensCount = 0;
     int i = 0;
+
 
     gets (string);
     gets (delimiters);
@@ -62,10 +63,11 @@ int main() {
      * Вероятно не выделяли явно. Тогда где хранятся слова? Слова хранятся непосредственно в string (метод strtok её модифицирует, добавляя в нужные места символы конца строки).
      * Из-за того, что вы пытаетесь освободить память, которую не выделяли, у меня, например, программа падает с segmentation fault`ом.
      */
-    
-    for (; i < tokensCount; i++)
-        free (tokens [i]);
+
+
     free (tokens);
+    free (string);
+    free (delimiters);
     /*
      * FIXIT:
      * Освободите уж всю память, которую выделили
