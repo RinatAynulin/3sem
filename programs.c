@@ -29,6 +29,11 @@ void split(char* string, char* delimiters, char*** tokens_ptr, int* tokensCount)
     tokens[*tokensCount] = currentToken;
 }
 
+/*
+ * Посмотрите http://ru.cppreference.com/w/cpp/language/operator_precedence
+ * А то вы сомниваетесь и лепите слишком много скобок.
+ */
+
 void getPrograms(FILE *input, program** programs_ptr, int programsCount) {
     int i, n;
     program* currentProgram = NULL;
@@ -36,17 +41,17 @@ void getPrograms(FILE *input, program** programs_ptr, int programsCount) {
     currentProgram = *programs_ptr;
 
     for (i = 0; i < programsCount; i++) {
-        (currentProgram[i]).args = (char**) malloc(MaxArgsCount * sizeof(char*));
-        (currentProgram[i]).line = (char*) malloc(MaxLineLength * sizeof(char*));
+        currentProgram[i].args = (char**) malloc(MaxArgsCount * sizeof(char*));
+        currentProgram[i].line = (char*) malloc(MaxLineLength * sizeof(char*));
 
-        fgets((currentProgram[i]).line, MaxLineLength, input);
+        fgets(currentProgram[i].line, MaxLineLength, input);
 
-        split((currentProgram[i]).line, Delimiters, &((currentProgram[i]).args), &((currentProgram[i]).argsCount));
-        (currentProgram[i]).time = atoi(((currentProgram[i]).args)[0]);
-        for (n = 0; n < (currentProgram[i]).argsCount - 1; n++) {
-            (currentProgram[i]).args[n] = (currentProgram[i]).args[n+1];
+        split(currentProgram[i].line, Delimiters, &(currentProgram[i].args), &(currentProgram[i].argsCount));
+        currentProgram[i].time = atoi(currentProgram[i].args[0]);
+        for (n = 0; n < currentProgram[i].argsCount - 1; n++) {
+            currentProgram[i].args[n] = currentProgram[i].args[n + 1];
         }
-        (currentProgram[i].argsCount)--;
+        currentProgram[i].argsCount--;
     }
 }
 
@@ -73,7 +78,6 @@ void getProgramsCount(FILE *fp, int* programsCount) {
     free(programsCountString);
 }
 
-
 int main() {
     int programsCount, i;
     FILE *fp = fopen(FileName, "r");
@@ -84,8 +88,8 @@ int main() {
     runPrograms(programs, programsCount);
 
     for (i = 0; i < programsCount; i++) {
-        free ((programs)[i].args);
-        free ((programs)[i].line);
+        free(programs[i].args);
+        free(programs[i].line);
     }
     free(programs);
     fclose(fp);

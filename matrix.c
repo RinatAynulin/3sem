@@ -6,6 +6,13 @@
 #define MATRIX_SIZE 1000
 #define THREADS_COUNT 1
 
+/*
+ * FIXIT:
+ * Такие большие матрицы надо выделять в куче malloc`ом, а не на стеке.
+   Также надо проверить ускорение от многопоточности. Вероятно, вы это проделали с помощью утилиты time.
+   Если нет, то как вариант можно воспользоваться системным вызовом clock().
+ */
+
 int matrix1[MATRIX_SIZE][MATRIX_SIZE], matrix2[MATRIX_SIZE][MATRIX_SIZE], result[MATRIX_SIZE][MATRIX_SIZE];
 
 void* multMatrix(void* arg) {
@@ -15,10 +22,10 @@ void* multMatrix(void* arg) {
     row = *((int*)arg);
     begin = size * row;
     end = size * row + size;
-	for (i = begin; i < end; i++)
+    for (i = begin; i < end; i++)
         for (j = 0; j < MATRIX_SIZE; j++)
             for (k = 0; k < MATRIX_SIZE; k++)
-			    result[i][j]+= matrix1[i][k] * matrix2[k][j];
+                result[i][j]+= matrix1[i][k] * matrix2[k][j];
 }
 
 void generateMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE]) {
@@ -53,7 +60,7 @@ int main() {
     for (i = 0; i < THREADS_COUNT; i++) {
         pthread_join(thID[i], NULL);
     }
-
+    
     /* printMatrix(matrix1);
     printf("\n");
     printMatrix(matrix2);
