@@ -14,30 +14,19 @@ typedef struct {
     char **args;
     char *line;
     int argsCount, time;
-} program; 
+} program;
 
 
-/*
- * В большинстве мест называете первое слово названия ф-я со строчной. А Split с заглавной.
- * Определитесь уже.
- * Вы вроде бы на java писали/пишете.
- * Посмотрите java style guide, и используйте его же для кода на си, если хотите, лишь бы единобразно было и стиле не смешивались.
- */
-
-void Split(char* string, char* delimiters, char*** tokens_ptr, int* tokensCount) {
+void split(char* string, char* delimiters, char*** tokens_ptr, int* tokensCount) {
     char** tokens = *tokens_ptr;
-    char* cur_token = NULL;
-    /*
-     * Вы в большинстве мест назваете переменные в стиле tokensCount, а не tokens_count.
-     * Поэтому ради единообразия называйте currentToken
-     */
-    cur_token = strtok(string, delimiters);
-    while (cur_token) {
-        tokens[*tokensCount] = cur_token;
+    char* currentToken = NULL;
+    currentToken = strtok(string, delimiters);
+    while (currentToken) {
+        tokens[*tokensCount] = currentToken;
         (*tokensCount)++;
-        cur_token = strtok(NULL, delimiters);
+        currentToken = strtok(NULL, delimiters);
     }
-    tokens[*tokensCount] = cur_token;
+    tokens[*tokensCount] = currentToken;
 }
 
 void getPrograms(FILE *input, program** programs_ptr, int programsCount) {
@@ -45,14 +34,14 @@ void getPrograms(FILE *input, program** programs_ptr, int programsCount) {
     program* currentProgram = NULL;
     *programs_ptr = (program*) malloc(MaxLinesCount * sizeof(program));
     currentProgram = *programs_ptr;
-    
+
     for (i = 0; i < programsCount; i++) {
         (currentProgram[i]).args = (char**) malloc(MaxArgsCount * sizeof(char*));
         (currentProgram[i]).line = (char*) malloc(MaxLineLength * sizeof(char*));
-        
+
         fgets((currentProgram[i]).line, MaxLineLength, input);
-        
-        Split((currentProgram[i]).line, Delimiters, &((currentProgram[i]).args), &((currentProgram[i]).argsCount));
+
+        split((currentProgram[i]).line, Delimiters, &((currentProgram[i]).args), &((currentProgram[i]).argsCount));
         (currentProgram[i]).time = atoi(((currentProgram[i]).args)[0]);
         for (n = 0; n < (currentProgram[i]).argsCount - 1; n++) {
             (currentProgram[i]).args[n] = (currentProgram[i]).args[n+1];
@@ -62,14 +51,10 @@ void getPrograms(FILE *input, program** programs_ptr, int programsCount) {
 }
 
 void runPrograms(program* programs, int programsCount) {
-	int i, status;
-	pid_t pid = 0;
-  /*
-   * У вас смешаны символы табуляции и пробелы. Не здорово.
-   */
+    int i, status;
+    pid_t pid = 0;
     for (i = 0; i < programsCount; i++) {
         pid = fork();
-
         if (pid == 0) {
             pid = getpid();
             printf("Process %d (%s)  > \n", pid, programs[i].args[0]);
@@ -79,19 +64,10 @@ void runPrograms(program* programs, int programsCount) {
             exit(-1);
         }
     }
-    /*
-     * Этот код сможет выполнить только родительский процесс, поэтому проверка лишняя.
-     */
-    if (pid > 0) for (i = 0; i < programsCount; i++) {
-        wait(&status);
-    }
 }
 
 void getProgramsCount(FILE *fp, int* programsCount) {
-/*
- * Почему не scanf обычный?
- */
-    char* programsCountString = (char*)malloc(MaxLineLength * sizeof(char)); 
+    char* programsCountString = (char*)malloc(MaxLineLength * sizeof(char));
     fgets(programsCountString, MaxLineLength, fp);
     *programsCount = atoi(programsCountString);
     free(programsCountString);
@@ -101,12 +77,12 @@ void getProgramsCount(FILE *fp, int* programsCount) {
 int main() {
     int programsCount, i;
     FILE *fp = fopen(FileName, "r");
-    
+
     getProgramsCount(fp, &programsCount);
     program *programs = (program*)malloc(programsCount * sizeof(program));
     getPrograms(fp, &programs, programsCount);
     runPrograms(programs, programsCount);
-    
+
     for (i = 0; i < programsCount; i++) {
         free ((programs)[i].args);
         free ((programs)[i].line);
