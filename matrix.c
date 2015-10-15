@@ -2,18 +2,12 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <malloc.h>
 
 #define MATRIX_SIZE 1000
-#define THREADS_COUNT 1
+#define THREADS_COUNT 2
 
-/*
- * FIXIT:
- * Такие большие матрицы надо выделять в куче malloc`ом, а не на стеке.
-   Также надо проверить ускорение от многопоточности. Вероятно, вы это проделали с помощью утилиты time.
-   Если нет, то как вариант можно воспользоваться системным вызовом clock().
- */
-
-int matrix1[MATRIX_SIZE][MATRIX_SIZE], matrix2[MATRIX_SIZE][MATRIX_SIZE], result[MATRIX_SIZE][MATRIX_SIZE];
+int **matrix1, **matrix2, **result;
 
 void* multMatrix(void* arg) {
     int size = MATRIX_SIZE / THREADS_COUNT;
@@ -28,16 +22,17 @@ void* multMatrix(void* arg) {
                 result[i][j]+= matrix1[i][k] * matrix2[k][j];
 }
 
-void generateMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE]) {
+void generateMatrix(int** matrix) {
     int i, j;
     srand(time(0));
-    for (i = 0; i < MATRIX_SIZE; i++)
+    for (i = 0; i < MATRIX_SIZE; i++) {
         for (j = 0; j < MATRIX_SIZE; j++) {
             matrix[i][j] = rand() % 10 + 1;
         }
+    }
 }
 
-void printMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE]) {
+void printMatrix(int** matrix) {
     int i, j;
     for (i = 0; i < MATRIX_SIZE; i++) {
         for (j = 0; j < MATRIX_SIZE; j++)
@@ -46,10 +41,29 @@ void printMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE]) {
     }
 }
 
+void allocateMemory(int*** matrix_ptr) {
+    int i;
+    *matrix_ptr = (int**)malloc(MATRIX_SIZE * sizeof(int*));
+    for (i = 0; i < MATRIX_SIZE; i++) {
+        (*matrix_ptr)[i] = (int*)malloc(MATRIX_SIZE * sizeof(int));
+    }
+}
+
+void freeMemory(int** matrix) {
+    int i;
+    for (i = 0; i < MATRIX_SIZE; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+}
+
 int main() {
     int i, args[THREADS_COUNT];
     int size = MATRIX_SIZE / THREADS_COUNT;
     pthread_t thID[THREADS_COUNT];
+    allocateMemory(&matrix1);
+    allocateMemory(&matrix2);
+    allocateMemory(&result);
     generateMatrix(matrix1);
     sleep(1);
     generateMatrix(matrix2);
@@ -60,11 +74,14 @@ int main() {
     for (i = 0; i < THREADS_COUNT; i++) {
         pthread_join(thID[i], NULL);
     }
-    
-    /* printMatrix(matrix1);
+
+/*  printMatrix(matrix1);
     printf("\n");
     printMatrix(matrix2);
     printf("\n");
     printMatrix(result); */
+    freeMemory(matrix1);
+    freeMemory(matrix2);
+    freeMemory(result);
     return 0;
 }
