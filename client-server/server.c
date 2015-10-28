@@ -76,3 +76,7 @@ int main() {
     msgctl(msqid, IPC_RMID, (struct msqid_ds*)NULL);
     return 0;
 }
+
+/*
+ * Ринат, сделайте, пожалуйста, ещё и с нитями вместо отдельных процессов.
+ */
