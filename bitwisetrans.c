@@ -13,7 +13,7 @@ int numberOfBit = 0, numberOfCharacter = 0;
 pid_t ppid, cpid;
 
 void waitHandler(int nsig) {
-    //printf("get bit \n");
+    printf("get bit \n");
 }
 
 void myHandler(int nsig) {
@@ -29,6 +29,10 @@ void myHandler(int nsig) {
         if (numberOfCharacter == strlen(STRING_TO_TRANSFER)) {
             result[numberOfCharacter] = '\0';
             printf("result : %s\n", result);
+	    /*
+	     * В этот момент можно было бы убить процессы.
+	     * У вас же они продолжают работать.
+	     */
         }
     }
     kill(cpid, SIGTERM);
@@ -53,6 +57,10 @@ int main() {
             char* tmp = original;
             for (; *tmp != 0; ++tmp) {
                 for (i = 7; i >= 0; --i) {
+		    /*
+		     * Тогда уж
+		     * kill(ppid, (*tmp & 1 << i) ? SIGUSR1 : SIGUSR2);
+		     */
                     (*tmp & 1 << i) ? kill(ppid, SIGUSR1) : kill(ppid, SIGUSR2);
                     pause();
                 }
