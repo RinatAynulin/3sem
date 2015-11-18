@@ -14,8 +14,8 @@
 #define MAX_CLIENTS_COUNT 128
 
 typedef struct {
-	struct sockaddr_in clientAddress;
-	char clientNick[MAX_CLIENT_NICK_LENGTH];
+    struct sockaddr_in clientAddress;
+    char clientNick[MAX_CLIENT_NICK_LENGTH];
 }Client;
 int sockfd;
 int clilen, n;
@@ -24,53 +24,53 @@ struct sockaddr_in serverAddress, clientAddress;
 Client clients[MAX_CLIENTS_COUNT];
 
 int firstMessageFrom(struct sockaddr_in currentClientAddress) {
-	int i = 0;
-	for (i; i < clientsCount; i++) {
-		if (currentClientAddress.sin_addr.s_addr == clients[i].clientAddress.sin_addr.s_addr
-			&& currentClientAddress.sin_port == clients[i].clientAddress.sin_port) {
-			return 0;
-		}
-	}
-	return 1;
+    int i = 0;
+    for (i; i < clientsCount; i++) {
+        if (currentClientAddress.sin_addr.s_addr == clients[i].clientAddress.sin_addr.s_addr
+            && currentClientAddress.sin_port == clients[i].clientAddress.sin_port) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 int getClientId(struct sockaddr_in currentClientAddress) {
-	int i = 0;
-	for (i; i < clientsCount; i++) {
-		if (currentClientAddress.sin_addr.s_addr == clients[i].clientAddress.sin_addr.s_addr
-			&& currentClientAddress.sin_port == clients[i].clientAddress.sin_port) {
-			return i;
-		}
-	}
+    int i = 0;
+    for (i; i < clientsCount; i++) {
+        if (currentClientAddress.sin_addr.s_addr == clients[i].clientAddress.sin_addr.s_addr
+            && currentClientAddress.sin_port == clients[i].clientAddress.sin_port) {
+            return i;
+        }
+    }
 }
 
 char* createMessage(char* sendLine, char* clientNick) {
-	char* tmp = strdup(sendLine);
-	strcpy(sendLine, clientNick);
-	strcat(sendLine, ": ");
-	strcat(sendLine, tmp);
-	free(tmp);
-	return sendLine;
+    char* tmp = strdup(sendLine);
+    strcpy(sendLine, clientNick);
+    strcat(sendLine, ": ");
+    strcat(sendLine, tmp);
+    free(tmp);
+    return sendLine;
 }
 
 void sendToChat(char* sendLine, int clientId) {
-	int i = 0;
-	sendLine = createMessage(sendLine, clients[clientId].clientNick);
-	for (i = 0; i < clientsCount; i++) {
-		if (i != clientId) {
-				if (sendto(sockfd, sendLine, strlen(sendLine) + 1, 0, (struct sockaddr*)&(clients[i].clientAddress), sizeof(clients[i].clientAddress)) < 0) {
-    		perror(NULL);
-    		close(sockfd);
-    		exit(1);
-    	}
-    	printf("Send %s to %s\n", sendLine, clients[i].clientNick);
+    int i = 0;
+    sendLine = createMessage(sendLine, clients[clientId].clientNick);
+    for (i = 0; i < clientsCount; i++) {
+        if (i != clientId) {
+            if (sendto(sockfd, sendLine, strlen(sendLine) + 1, 0, (struct sockaddr*)&(clients[i].clientAddress), sizeof(clients[i].clientAddress)) < 0) {
+                perror(NULL);
+                close(sockfd);
+                exit(1);
+            }
+        printf("Send %s to %s\n", sendLine, clients[i].clientNick);
         }
-	}
+    }
 }
 
 void addNewClient(struct sockaddr_in currentClientAddress, char* clientNick) {
-	char sendLine[MAX_MESSAGE_LENGTH];
-	bzero(&clients[clientsCount].clientAddress, sizeof(clients[clientsCount].clientAddress));
+    char sendLine[MAX_MESSAGE_LENGTH];
+    bzero(&clients[clientsCount].clientAddress, sizeof(clients[clientsCount].clientAddress));
     clients[clientsCount].clientAddress.sin_family = currentClientAddress.sin_family;
     clients[clientsCount].clientAddress.sin_port = currentClientAddress.sin_port;
     clients[clientsCount].clientAddress.sin_addr.s_addr = currentClientAddress.sin_addr.s_addr;

@@ -21,7 +21,7 @@ char receiveLine[MAX_MESSAGE_LENGTH];
 void sender() {
     while(1) {
         fgets(sendline, MAX_MESSAGE_LENGTH, stdin);
-		if (sendto(sockfd, sendline, strlen(sendline) + 1, 0, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
+        if (sendto(sockfd, sendline, strlen(sendline) + 1, 0, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
             perror(NULL);
             close(sockfd);
             exit(1);
@@ -30,13 +30,13 @@ void sender() {
 }
 
 void receiver() {
-	while(1) {
-		if ((n = recvfrom(sockfd, receiveLine, MAX_MESSAGE_LENGTH, 0, (struct sockaddr*) NULL, NULL)) < 0) {
-    		perror(NULL);
-    		close(sockfd);
-    		exit(1);
+    while(1) {
+        if ((n = recvfrom(sockfd, receiveLine, MAX_MESSAGE_LENGTH, 0, (struct sockaddr*) NULL, NULL)) < 0) {
+            perror(NULL);
+            close(sockfd);
+            exit(1);
         }
-  	printf("%s\n", receiveLine);
+        printf("%s\n", receiveLine);
     }
 }
 
@@ -44,12 +44,12 @@ void enterChat() {
     printf("Welcome! Enter your nick \n");
     fgets(sendline, MAX_MESSAGE_LENGTH, stdin);
     sendline[strlen(sendline) - 1] = '\0';
-	if (sendto(sockfd, sendline, strlen(sendline) + 1, 0,
+    if (sendto(sockfd, sendline, strlen(sendline) + 1, 0,
     (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
-    	perror(NULL);
-    	close(sockfd);
-    	exit(1);
-  	}
+        perror(NULL);
+        close(sockfd);
+        exit(1);
+    }
 }
 
 int main() {
@@ -77,13 +77,13 @@ int main() {
         exit(1);
     }
     enterChat();
-	pid_t pid = fork();
-	if (pid > 0) {
-  		sender();
-	}
-	else {
-		receiver();
+    pid_t pid = fork();
+    if (pid > 0) {
+        sender();
+    }
+    else {
+        receiver();
 	}
     close(sockfd);
-	return 0;
+    return 0;
 }
