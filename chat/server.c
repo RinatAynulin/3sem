@@ -16,7 +16,8 @@
 typedef struct {
     struct sockaddr_in clientAddress;
     char clientNick[MAX_CLIENT_NICK_LENGTH];
-}Client;
+} Client;
+
 int sockfd;
 int clilen, n;
 int clientsCount;

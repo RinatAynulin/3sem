@@ -8,6 +8,14 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+/*
+ * Засчитано. Небольшие формальные замечания.
+ */
+
+/*
+ * Называйте константы единообразно: SERVER_IP, ...
+ */
+
 #define serverIp "127.0.0.1"
 #define serverPort 51000
 #define MAX_MESSAGE_LENGTH 1024
@@ -18,6 +26,9 @@ int n, len;
 char sendline[MAX_MESSAGE_LENGTH];
 char receiveLine[MAX_MESSAGE_LENGTH];
 
+/*
+ * В названии ф-й должны быть глаголы, а не существительные.
+ */
 void sender() {
     while(1) {
         fgets(sendline, MAX_MESSAGE_LENGTH, stdin);
@@ -83,7 +94,7 @@ int main() {
     }
     else {
         receiver();
-	}
+    }
     close(sockfd);
     return 0;
 }
