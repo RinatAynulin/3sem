@@ -64,7 +64,7 @@ void sendToChat(char* sendLine, int clientId) {
     		exit(1);
     	}
     	printf("Send %s to %s\n", sendLine, clients[i].clientNick);
-  	}
+        }
 	}
 }
 

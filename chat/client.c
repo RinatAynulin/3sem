@@ -22,9 +22,9 @@ void sender() {
     while(1) {
         fgets(sendline, MAX_MESSAGE_LENGTH, stdin);
 		if (sendto(sockfd, sendline, strlen(sendline) + 1, 0, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
-    	perror(NULL);
-    	close(sockfd);
-    	exit(1);
+            perror(NULL);
+            close(sockfd);
+            exit(1);
         }
     }
 }
@@ -35,7 +35,7 @@ void receiver() {
     		perror(NULL);
     		close(sockfd);
     		exit(1);
-  	}
+        }
   	printf("%s\n", receiveLine);
     }
 }
@@ -54,8 +54,8 @@ void enterChat() {
 
 int main() {
     if ((sockfd = socket(PF_INET, SOCK_DGRAM, 0)) < 0) {
-    perror(NULL);
-    exit(1);
+        perror(NULL);
+        exit(1);
     }
 
     bzero(&clientAddress, sizeof(clientAddress));
