@@ -19,6 +19,14 @@
 double bankBalance;
 int sockfd, newsockfd, semid;
 
+/*
+ * Засчитано, но ...
+ * 1. Мы же с вами говорили уже, что вместо semaphore1 и semaphore2 лучше написать нечто более
+ * осмысленное вроде lockSemaphore и unlockSemaphore.
+ * 2. listen(... , 5) здесь 5 вполне можно также вынести в отдельную константу
+ * 5 означает, что не более 5 клиентов могут одновременно общаться по сети с сервером.
+ */
+
 void semaphore1() {
     struct sembuf mybuf;
     mybuf.sem_op = -1;
